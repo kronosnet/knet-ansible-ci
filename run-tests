@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -e
+
+function print_usage() {
+	echo "$(basename $0)"
+	echo ""
+	echo "usage:"
+	echo ""
+	echo "$(basename $0) [options]"
+	echo ""
+	echo "Options:"
+	echo " -h                            print this help text"
+	echo " -i [basename],[numnodes]      generate/update inventory file"
+}
+
+function generate_ansible_cfg {
+	echo "[defaults]" > ansible.cfg
+	echo "callback_plugins = plugins/" >> ansible.cfg
+	echo "inventory = ansible-inventory" >> ansible.cfg
+	echo "generated ansible config:"
+	echo "========================="
+	cat ansible.cfg
+	echo "========================="
+	echo ""
+}
+
+function generate_inventory_file() {
+	echo "[test-nodes]" > ansible-inventory
+	echo "$knethosts" | sed -e 's/,/[1:/g' -e 's/$/]/g' >> ansible-inventory
+	echo "generated ansible inventory:"
+	echo "============================"
+	cat ansible-inventory
+	echo "============================"
+	echo ""
+}
+
+# parse command line options
+#
+# h -> help
+
+while getopts ":hi:sl:k:c:f" optflag; do
+	case "$optflag" in
+	i)
+		knethosts="$OPTARG"
+		;;
+	h)
+		print_usage
+		exit 0
+		;;
+	\?|:)
+		print_usage
+		exit 1
+		;;
+	esac
+done
+
+if ! which ansible >/dev/null 2>&1; then
+	echo "ERROR: missing ansible binary from PATH"
+	exit 1
+fi
+
+if ! which ansible-playbook >/dev/null 2>&1; then
+	echo "ERROR: missing ansible-playbook binary from PATH"
+	exit 1
+fi
+
+# automatic update ansible-config
+if [ -f ansible.cfg.manual ]; then
+	cp ansible.cfg.manual ansible.cfg
+else
+	generate_ansible_cfg
+fi
+
+# generate and check ansible inventory file
+if [ -n "$knethosts" ]; then
+	generate_inventory_file
+fi
+if [ ! -f ansible-inventory ]; then
+	echo "ERROR: missing ansible-inventory file"
+	exit 1
+fi
+
+echo "Checking connectivity to nodes"
+echo ""
+
+ansible all -m ping || exit 1
+echo ""
+
+exit 0
