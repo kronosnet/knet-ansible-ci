@@ -1,0 +1,13 @@
+---
+# top level playbook
+# Install all build depedencies and keep hosts updated
+# clone/build/install code
+# run tests
+#
+
+- name: Install all build depedencies and keep hosts updated
+  hosts: test-nodes
+
+  roles:
+    - hostsetup
+

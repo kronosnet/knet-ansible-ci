@@ -2,6 +2,9 @@
 
 set -e
 
+# defaults
+skipupdate=no
+
 function print_usage() {
 	echo "$(basename $0)"
 	echo ""
@@ -12,6 +15,7 @@ function print_usage() {
 	echo "Options:"
 	echo " -h                            print this help text"
 	echo " -i [basename],[numnodes]      generate/update inventory file"
+	echo " -s                            skip host update/upgrade and reboot"
 }
 
 function generate_ansible_cfg {
@@ -39,7 +43,7 @@ function generate_inventory_file() {
 #
 # h -> help
 
-while getopts ":hi:sl:k:c:f" optflag; do
+while getopts ":hi:s" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -47,6 +51,9 @@ while getopts ":hi:sl:k:c:f" optflag; do
 	h)
 		print_usage
 		exit 0
+		;;
+	s)
+		skipupdate=yes
 		;;
 	\?|:)
 		print_usage
@@ -86,5 +93,9 @@ echo ""
 
 ansible all -m ping || exit 1
 echo ""
+
+ansible-playbook site.yml --extra-vars "\
+	skipupdate=$skipupdate \
+"
 
 exit 0
