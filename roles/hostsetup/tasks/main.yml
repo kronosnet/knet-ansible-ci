@@ -1,7 +1,7 @@
 - name: update system
   yum: name='*' update_cache=yes state=latest
   register: latest_state
-  when: skipupdate == 'no'
+  when: skipupdate != 'yes'
 
 - name: install build deps
   yum: name={{ item }} state=installed
