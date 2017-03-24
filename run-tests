@@ -2,9 +2,6 @@
 
 set -e
 
-# defaults
-skipupdate=no
-
 function print_usage() {
 	echo "$(basename $0)"
 	echo ""
@@ -40,8 +37,8 @@ function generate_inventory_file() {
 }
 
 # parse command line options
-#
-# h -> help
+
+extravars=""
 
 while getopts ":hi:s" optflag; do
 	case "$optflag" in
@@ -53,7 +50,7 @@ while getopts ":hi:s" optflag; do
 		exit 0
 		;;
 	s)
-		skipupdate=yes
+		extravars="skipupdate=yes $extravars"
 		;;
 	\?|:)
 		print_usage
@@ -94,8 +91,6 @@ echo ""
 ansible all -m ping || exit 1
 echo ""
 
-ansible-playbook site.yml --extra-vars "\
-	skipupdate=$skipupdate \
-"
+ansible-playbook site.yml --extra-vars "$extravars"
 
 exit 0
