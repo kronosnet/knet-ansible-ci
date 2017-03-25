@@ -13,6 +13,7 @@ function print_usage() {
 	echo " -h                            print this help text"
 	echo " -i [basename],[numnodes]      generate/update inventory file"
 	echo " -s                            skip host update/upgrade and reboot"
+	echo " -w                            wipe all src/build dirs and start fresh"
 }
 
 function generate_ansible_cfg {
@@ -40,7 +41,7 @@ function generate_inventory_file() {
 
 extravars=""
 
-while getopts ":hi:s" optflag; do
+while getopts ":hi:sw" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -51,6 +52,9 @@ while getopts ":hi:s" optflag; do
 		;;
 	s)
 		extravars="skipupdate=yes $extravars"
+		;;
+	w)
+		extravars="wipecode=yes $extravars"
 		;;
 	\?|:)
 		print_usage

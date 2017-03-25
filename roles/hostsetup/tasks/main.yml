@@ -34,3 +34,13 @@
 - name: wait for servers to come back after reboot
   local_action: wait_for host={{ ansible_ssh_host }} state=started delay=90 timeout=300
   when: reboot.changed
+
+- name: clean src/build dirs on demand
+  file: path=/srv/knetansible/ state=absent
+  when: wipecode == 'yes'
+
+- name: create /srv/knetansible/src
+  file: path=/srv/knetansible/src state=directory mode=0755
+
+- name: create /srv/knetansible/build
+  file: path=/srv/knetansible/build state=directory mode=0755
