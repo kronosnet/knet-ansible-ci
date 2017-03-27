@@ -1,0 +1,2 @@
+- include: corosync.yml
+  when: skipcorosync != 'yes'

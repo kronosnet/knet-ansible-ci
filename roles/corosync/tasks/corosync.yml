@@ -1,0 +1,50 @@
+- name: install corosync / corosync-devel
+  yum: name={{ item }} state=installed
+  when: corosyncsrc == 'system'
+  with_items:
+   - corosync
+   - corosynclib
+   - corosynclib-devel
+   - corosync-qdevice
+   - corosync-qnetd
+   - corosync-testagents
+
+- name: remove system corosync if installed
+  yum: name={{ item }} state=absent
+  when: corosyncsrc != 'system'
+  with_items:
+   - corosync
+   - corosynclib
+   - corosynclib-devel
+   - corosync-qdevice
+   - corosync-qnetd
+   - corosync-testagents
+
+- name: corosync git clone
+  git:
+   repo: '{{ corosyncgitrepo }}'
+   dest: /srv/knetansible/src/corosync
+   clone: yes
+   force: yes
+   version: '{{ corosyncgitver }}'
+  when: corosyncsrc == 'git'
+
+- name: corosync autotool
+  shell: cd /srv/knetansible/src/corosync && ./autogen.sh
+  when: corosyncsrc == 'git'
+
+- name: create /srv/knetansible/build/corosync
+  file: path=/srv/knetansible/build/corosync state=directory mode=0755
+  when: corosyncsrc == 'git' or corosyncsrc == 'local'
+
+- name: setup build tree (from git)
+  shell: cd /srv/knetansible/build/corosync && /srv/knetansible/src/corosync/configure {{ corosyncconfopt }}
+  when: corosyncsrc == 'git'
+
+- name: setup build tree (from local)
+  shell: cd /srv/knetansible/build/corosync && '{{ corosynclocalpath }}'/configure {{ corosyncconfopt }}
+  when: corosyncsrc == 'local'
+
+- name: build / install corosync
+  shell: cd /srv/knetansible/build/corosync && make {{ corosyncbuildopt }} all install && ldconfig -v
+  when: corosyncsrc == 'git' or corosyncsrc == 'local'

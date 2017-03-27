@@ -1,0 +1,48 @@
+- name: install kronosnet / kronosnet-devel
+  yum: name={{ item }} state=installed
+  when: kronosnetsrc == 'system'
+  with_items:
+   - kronosnetd
+   - libtap0
+   - libtap0-devel
+   - libknet0
+   - libknet0-devel
+
+- name: remove system kronosnet if installed
+  yum: name={{ item }} state=absent
+  when: kronosnetsrc != 'system'
+  with_items:
+   - kronosnetd
+   - libtap0
+   - libtap0-devel
+   - libknet0
+   - libknet0-devel
+
+- name: kronosnet git clone
+  git:
+   repo: '{{ kronosnetgitrepo }}'
+   dest: /srv/knetansible/src/kronosnet
+   clone: yes
+   force: yes
+   version: '{{ kronosnetgitver }}'
+  when: kronosnetsrc == 'git'
+
+- name: kronosnet autotool
+  shell: cd /srv/knetansible/src/kronosnet && ./autogen.sh
+  when: kronosnetsrc == 'git'
+
+- name: create /srv/knetansible/build/kronosnet
+  file: path=/srv/knetansible/build/kronosnet state=directory mode=0755
+  when: kronosnetsrc == 'git' or kronosnetsrc == 'local'
+
+- name: setup build tree (from git)
+  shell: cd /srv/knetansible/build/kronosnet && /srv/knetansible/src/kronosnet/configure {{ kronosnetconfopt }}
+  when: kronosnetsrc == 'git'
+
+- name: setup build tree (from local)
+  shell: cd /srv/knetansible/build/kronosnet && '{{ kronosnetlocalpath }}'/configure {{ kronosnetconfopt }}
+  when: kronosnetsrc == 'local'
+
+- name: build / install kronosnet
+  shell: cd /srv/knetansible/build/kronosnet && make {{ kronosnetbuildopt }} all install && ldconfig -v
+  when: kronosnetsrc == 'git' or kronosnetsrc == 'local'

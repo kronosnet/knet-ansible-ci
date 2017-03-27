@@ -1,0 +1,2 @@
+- include: kronosnet.yml
+  when: skipkronosnet != 'yes'

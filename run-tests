@@ -10,10 +10,22 @@ function print_usage() {
 	echo "$(basename $0) [options]"
 	echo ""
 	echo "Options:"
-	echo " -h                            print this help text"
-	echo " -i [basename],[numnodes]      generate/update inventory file"
-	echo " -s                            skip host update/upgrade and reboot"
-	echo " -w                            wipe all src/build dirs and start fresh"
+	echo " -h                          print this help text"
+	echo " -i [basename],[numnodes]    generate/update inventory file"
+	echo " -s                          skip host update/upgrade and reboot"
+	echo " -w                          wipe all src/build dirs and start fresh"
+	echo " -l [src options see below]  libqb"
+	echo " -k [src options see below]  kronosnet"
+	echo " -c [src options see below]  corosync"
+	echo " Source options: (default git, github repos, master branch)"
+	echo "    git[,repo[,branch]]      use git. Optionally provide an alternative repo and branch"
+	echo "                             brach accepts the same values as defined by:"
+	echo "                             http://docs.ansible.com/ansible/git_module.html version option"
+	echo "                             with force = yes"
+	echo "    local,path               path to the code. Code must be initializied"
+	echo "                             and directory should already contains ./configure"
+	echo "    system                   install system provided rpms"
+	echo "    skip                     do nothing. code is installed already. don't touch it"
 }
 
 function generate_ansible_cfg {
@@ -37,11 +49,54 @@ function generate_inventory_file() {
 	echo ""
 }
 
+function parse_src_opts {
+	project="$1"
+	shift
+	args="$@"
+
+	src="$(echo $args | awk -F ',' '{print $1}')"
+
+	case "$src" in
+		system)
+			extravars="${project}src=system $extravars"
+		;;
+		skip)
+			extravars="skip$project=yes $extravars"
+		;;
+		git)
+			extravars="${project}src=git $extravars"
+			repo="$(echo $args | awk -F ',' '{print $2}')"
+			if [ -n "$repo" ]; then
+				extravars="${project}gitrepo=$repo $extravars"
+				version="$(echo $args | awk -F ',' '{print $3}')"
+				if [ -n "$version" ]; then
+					extravars="${project}gitver=$version $extravars"
+				fi
+			fi
+		;;
+		local)
+			extravars="${project}src=local $extravars"
+			localpath="$(echo $args | awk -F ',' '{print $2}')"
+			if [ -z "$localpath" ]; then
+				echo "Error: $project local option requires a path to the src code"
+				exit 1
+			fi
+			extravars="${project}localpath=$localpath $extravars"
+		;;
+		*)
+			echo "Unknown $src option for $project"
+			exit 1
+		;;
+	esac
+
+	return 0
+}
+
 # parse command line options
 
 extravars=""
 
-while getopts ":hi:sw" optflag; do
+while getopts ":hi:swl:k:c:" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -55,6 +110,15 @@ while getopts ":hi:sw" optflag; do
 		;;
 	w)
 		extravars="wipecode=yes $extravars"
+		;;
+	l)
+		parse_src_opts libqb "$OPTARG"
+		;;
+	k)
+		parse_src_opts kronosnet "$OPTARG"
+		;;
+	c)
+		parse_src_opts corosync "$OPTARG"
 		;;
 	\?|:)
 		print_usage

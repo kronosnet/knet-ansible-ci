@@ -1,2 +1,27 @@
 skipupdate: no
+
 wipecode: no
+
+skiplibqb: no
+libqbsrc: git
+libqbgitrepo: https://github.com/ClusterLabs/libqb.git
+libqbgitver: master
+libqblocalpath:
+libqbconfopt:
+libqbbuildopt:
+
+skipkronosnet: no
+kronosnetsrc: git
+kronosnetgitrepo: https://github.com/fabbione/kronosnet.git
+kronosnetgitver: master
+kronosnetlocalpath:
+kronosnetconfopt: --enable-kronosnetd
+kronosnetbuildopt:
+
+skipcorosync: no
+corosyncsrc: git
+corosyncgitrepo: https://github.com/corosync/corosync.git
+corosyncgitver: master
+corosynclocalpath:
+corosyncconfopt:
+corosyncbuildopt:

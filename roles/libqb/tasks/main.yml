@@ -1,0 +1,2 @@
+- include: libqb.yml
+  when: skiplibqb != 'yes'
