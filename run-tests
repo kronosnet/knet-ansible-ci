@@ -10,22 +10,31 @@ function print_usage() {
 	echo "$(basename $0) [options]"
 	echo ""
 	echo "Options:"
-	echo " -h                          print this help text"
-	echo " -i [basename],[numnodes]    generate/update inventory file"
-	echo " -s                          skip host update/upgrade and reboot"
-	echo " -w                          wipe all src/build dirs and start fresh"
-	echo " -l [src options see below]  libqb"
-	echo " -k [src options see below]  kronosnet"
-	echo " -c [src options see below]  corosync"
+	echo " -h                           print this help text"
+	echo " -i [basename],[numnodes]     generate/update inventory file"
+	echo " -s                           skip host update/upgrade and reboot"
+	echo " -w                           wipe all src/build dirs and start fresh"
+	echo " -l [src options see below]   libqb"
+	echo " -k [src options see below]   kronosnet"
+	echo " -c [src options see below]   corosync"
 	echo " Source options: (default git, github repos, master branch)"
-	echo "    git[,repo[,branch]]      use git. Optionally provide an alternative repo and branch"
-	echo "                             brach accepts the same values as defined by:"
-	echo "                             http://docs.ansible.com/ansible/git_module.html version option"
-	echo "                             with force = yes"
-	echo "    local,path               path to the code. Code must be initializied"
-	echo "                             and directory should already contains ./configure"
-	echo "    system                   install system provided rpms"
-	echo "    skip                     do nothing. code is installed already. don't touch it"
+	echo "    git[,repo[,branch]]       use git. Optionally provide an alternative repo and branch"
+	echo "                              brach accepts the same values as defined by:"
+	echo "                              http://docs.ansible.com/ansible/git_module.html version option"
+	echo "                              with force = yes"
+	echo "    local,path                path to the code. Code must be initializied"
+	echo "                              and directory should already contain ./configure"
+	echo "    system                    install system provided rpms"
+	echo "    skip                      do nothing. code is installed already. don't touch it"
+	echo " -a [prj,confi opts]:[prj..   add extra configure options."
+	echo "                              prj: libqb kronosnet corosync"
+	echo "                              configure opts are passed pristine to './configure \$conf_opts"
+	echo "                              example: -a corosync,\"--enable-debug --enable-foo\":kronosnet,\"--enable-kronosnetd --enable-debug\""
+	echo "                              note: shell escaping is important to identify options"
+	echo " -b [prj,build opts]:[prj..   add extra build options."
+	echo "                              prj: libqb kronosnet corosync"
+	echo "                              build opts are passed pristine to 'make \$build_opts all install'"
+	echo "                              note: shell escaping is important to identify options"
 }
 
 function generate_ansible_cfg {
@@ -92,18 +101,34 @@ function parse_src_opts {
 	return 0
 }
 
+function parse_build_opts {
+	target=$1
+	shift
+	bopts=$@
+
+	while [ -n "$bopts" ]; do
+		curopt="$(echo "$bopts" | awk -F ":" '{print $1}')"
+		project="$(echo "$curopt" | awk -F ',' '{print $1}')"
+		opts="$(echo "$curopt" | awk -F ',' '{print $2}')"
+		extravars="${project}${target}opt=\"${opts}\" $extravars"
+		if echo "$bopts" | grep -q ":"; then
+			bopts="$(echo "$bopts" | sed -e 's/.*://')"
+		else
+			bopts=""
+		fi
+	done
+
+	return 0
+}
+
 # parse command line options
 
 extravars=""
 
-while getopts ":hi:swl:k:c:" optflag; do
+while getopts ":hi:swl:k:c:a:b:" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
-		;;
-	h)
-		print_usage
-		exit 0
 		;;
 	s)
 		extravars="skipupdate=yes $extravars"
@@ -119,6 +144,16 @@ while getopts ":hi:swl:k:c:" optflag; do
 		;;
 	c)
 		parse_src_opts corosync "$OPTARG"
+		;;
+	a)
+		parse_build_opts conf "$OPTARG"
+		;;
+	b)
+		parse_build_opts build "$OPTARG"
+		;;
+	h)
+		print_usage
+		exit 0
 		;;
 	\?|:)
 		print_usage
