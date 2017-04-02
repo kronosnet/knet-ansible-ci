@@ -1,0 +1,35 @@
+- name: update system
+  yum: name='*' update_cache=yes state=latest
+  register: latest_state
+
+- name: install build deps
+  yum: name={{ item }} state=installed
+  with_items:
+   - git
+   - autoconf
+   - automake
+   - libtool
+   - doxygen
+   - procps
+   - check-devel
+   - nss-devel
+   - lksctp-tools-devel
+   - pam-devel
+   - gdb
+   - valgrind
+   - tcpdump
+   - zlib-devel
+   - net-tools
+   - groff
+
+- name: reboot servers only after upgrades/updates
+  shell: sleep 2 && /sbin/shutdown -r +1
+  async: 0
+  poll: 0
+  ignore_errors: true
+  register: reboot
+  when: latest_state.changed
+
+- name: wait for servers to come back after reboot
+  local_action: wait_for host={{ ansible_ssh_host }} state=started delay=90 timeout=300
+  when: reboot.changed
