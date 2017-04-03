@@ -9,6 +9,9 @@
 totem {
     version: 2
     cluster_name: testcluster
+{% if ipproto == 'ipv6' %}
+    ip_version: ipv6
+{% endif %}
 {% if corosync_transport is defined %}
     transport: {{ corosync_transport }}
 {% endif %}
