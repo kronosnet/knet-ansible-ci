@@ -1,3 +1,9 @@
+- name: generate authkey
+  shell: dd if=/dev/zero of=/etc/corosync/authkey bs=4096 count=1
+
+- name: authkey permission
+  file: path=/etc/corosync/authkey owner=root group=root mode=0600
+
 - name: remove old corosync.conf
   file: path=/etc/corosync/corosync.conf state=absent
 
