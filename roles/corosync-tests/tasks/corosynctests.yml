@@ -1,0 +1,16 @@
+- name: remove old corosync.conf
+  file: path=/etc/corosync/corosync.conf state=absent
+
+- name: install corosync.conf (udpu)
+  vars:
+    corosync_transport: "udpu"
+  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf
+
+- name: remove old corosync.conf
+  file: path=/etc/corosync/corosync.conf state=absent
+
+- name: install corosync.conf (knet)
+  vars:
+    corosync_transport: "knet"
+  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf
+

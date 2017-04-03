@@ -1,0 +1,67 @@
+# managed by ansible
+
+{% if corosync_transport is defined and corosync_transport == 'udpu' %}
+{% set interfaces = interfaces.split(',')[0] %}
+{% endif %}
+
+{% set intlist = interfaces.split(',') %}
+
+totem {
+    version: 2
+    cluster_name: testcluster
+{% if corosync_transport is defined %}
+    transport: {{ corosync_transport }}
+{% endif %}
+{% if corosync_transport is defined and corosync_transport == 'knet' %}
+{% if corosync_knet_link_mode is defined %}
+    link_mode: {{ corosync_knet_link_mode }}
+{% endif %}
+{% if corosync_knet_crypto_hash is defined %}
+    crypto_hash: {{ corosync_knet_crypto_hash }}
+{% endif %}
+{% if corosync_knet_crypto_cipher is defined %}
+    crypto_cipher: {{ corosync_knet_crypto_cipher }}
+{% endif %}
+{% if corosync_knet_transport is defined %}
+{% for interface in intlist %}
+    interface {
+        linknumber: {{ loop.index0 }}
+        knet_transport: {{ corosync_knet_transport }}
+    }
+{% endfor %}
+{% endif %}
+{% endif %}
+}
+
+nodelist {
+{% for node in groups['test-nodes'] %}
+    node {
+{% for interface in intlist %}
+{% set outer_loop = loop %}
+{% if ipproto == 'ipv4' %}
+        ring{{ outer_loop.index0 }}_addr: {{ hostvars[node]['ansible_' + interface]['ipv4']['address'] }}
+{% else %}
+{% set v6list = hostvars[node]['ansible_' + interface]['ipv6'] %}
+{% for v6 in v6list %}
+{% if v6.scope == 'global' %}
+        ring{{ outer_loop.index0 }}_addr: {{ v6.address }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+        nodeid: {{ loop.index }}
+    }
+{% endfor %}
+}
+
+quorum {
+    provider: corosync_votequorum
+}
+
+logging {
+    debug: on
+    to_logfile: yes
+    logfile: /var/log/cluster/corosync.log
+    to_syslog: yes
+    timestamp: off
+}

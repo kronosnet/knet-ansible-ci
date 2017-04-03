@@ -5,7 +5,7 @@
 # run tests
 #
 
-- name: Install all build depedencies and keep hosts updated
+- name: Install and build everything
   hosts: test-nodes
 
   roles:
@@ -13,3 +13,9 @@
     - libqb
     - kronosnet
     - corosync
+
+- name: corosync tests
+  hosts: test-nodes
+
+  roles:
+    - corosync-tests

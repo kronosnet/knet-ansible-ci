@@ -23,5 +23,12 @@ corosyncsrc: git
 corosyncgitrepo: https://github.com/corosync/corosync.git
 corosyncgitver: master
 corosynclocalpath:
-corosyncconfopt:
+corosyncconfopt: --enable-systemd
 corosyncbuildopt:
+
+interfaces: eth0
+ipproto: ipv4
+
+skipcorosynctests: no
+
+skipknetbenchtests: no
