@@ -1,0 +1,7 @@
+- name: remove old corosync.conf
+  file: path=/etc/corosync/corosync.conf state=absent
+
+- name: install corosync.conf
+  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf
+
+- include: startcorosync.yml

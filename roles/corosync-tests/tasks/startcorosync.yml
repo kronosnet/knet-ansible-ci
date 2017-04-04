@@ -1,0 +1,8 @@
+- name: stop corosync
+  service: name=corosync state=stopped
+
+- name: start corosync
+  service: name=corosync state=started
+
+- name: wait for quorum
+  shell: sleep 2 && loop=0 && while [ "$(corosync-quorumtool | grep ^Expected | awk '{print $NF}')" != "$(corosync-quorumtool | grep ^Total | awk '{print $NF}')" ]; do sleep 0.5 && loop=$((loop + 1)) && if [ "$loop" -gt "40" ]; then exit 1; fi; done

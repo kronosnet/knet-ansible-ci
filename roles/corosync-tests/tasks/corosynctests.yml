@@ -4,19 +4,14 @@
 - name: authkey permission
   file: path=/etc/corosync/authkey owner=root group=root mode=0600
 
-- name: remove old corosync.conf
-  file: path=/etc/corosync/corosync.conf state=absent
-
-- name: install corosync.conf (udpu)
+- include: genconf_and_run.yml
   vars:
     corosync_transport: "udpu"
-  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf
 
-- name: remove old corosync.conf
-  file: path=/etc/corosync/corosync.conf state=absent
-
-- name: install corosync.conf (knet)
+- include: genconf_and_run.yml
   vars:
     corosync_transport: "knet"
-  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf
+
+- name: stop corosync
+  service: name=corosync state=stopped
 
