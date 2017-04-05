@@ -4,14 +4,42 @@
 - name: authkey permission
   file: path=/etc/corosync/authkey owner=root group=root mode=0600
 
-- include: genconf_and_run.yml
+- name: run udpu tests
+  include: genconf_and_run.yml
   vars:
     corosync_transport: "udpu"
+    ipproto: "{{ item }}"
+    test_output: "udpu_{{ item }}"
+  with_items:
+    - [ 'ipv4', 'ipv6' ]
 
-- include: genconf_and_run.yml
+- name: run knet tests
+  include: genconf_and_run.yml
   vars:
     corosync_transport: "knet"
+    ipproto: "{{ item[0] }}"
+    corosync_knet_transport: "{{ item[1] }}"
+    corosync_knet_link_mode: "{{ item[2] }}"
+    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_crypto_off"
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'udp', 'sctp' ]
+    - [ 'passive', 'active' ]
+
+- name: run knet crypto tests
+  include: genconf_and_run.yml
+  vars:
+    corosync_transport: "knet"
+    ipproto: "{{ item[0] }}"
+    corosync_knet_transport: "{{ item[1] }}"
+    corosync_knet_link_mode: "{{ item[2] }}"
+    corosync_knet_crypto_hash: "sha1"
+    crypto_cipher: "aes256"
+    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_crypto_on"
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'udp', 'sctp' ]
+    - [ 'passive', 'active' ]
 
 - name: stop corosync
   service: name=corosync state=stopped
-
