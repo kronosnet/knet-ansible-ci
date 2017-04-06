@@ -3,3 +3,4 @@ ansible.cfg
 ansible-inventory
 *.retry
 *.swp
+testresults
