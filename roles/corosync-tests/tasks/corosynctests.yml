@@ -40,7 +40,7 @@
     corosync_knet_transport: "{{ item[1] }}"
     corosync_knet_link_mode: "{{ item[2] }}"
     corosync_knet_crypto_hash: "sha1"
-    crypto_cipher: "aes256"
+    corosync_knet_crypto_cipher: "aes256"
     test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_crypto_on"
   with_nested:
     - [ 'ipv4', 'ipv6' ]
