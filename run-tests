@@ -130,7 +130,7 @@ function parse_build_opts {
 
 # parse command line options
 
-testresdir="$PWD/testresults/$(date +%Y%m%d-%H%M%S)"
+testresdir="$PWD/testresults"
 
 extravars=""
 
@@ -208,6 +208,9 @@ echo ""
 
 ansible all -m ping || exit 1
 echo ""
+
+mkdir -p "${testresdir}"
+testresdir="${testresdir}/$(date +%Y%m%d-%H%M%S)"
 
 ansible-playbook site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
 
