@@ -40,6 +40,8 @@ function print_usage() {
 	echo "                              udpu will only use the first interface. knet will use all"
 	echo "                              tests assume that eth0 on node1 is configured on the same"
 	echo "                              ipv4/ipv6 subnet of eth0 on the other nodes, etc."
+	echo " -p path_to_testresults       location where to store test results."
+	echo "                              Default: \$PWD/testresults/\$(date +%Y%m%d-%H%M%S)/"
 }
 
 function generate_ansible_cfg {
@@ -128,9 +130,11 @@ function parse_build_opts {
 
 # parse command line options
 
+testresdir="$PWD/testresults/$(date +%Y%m%d-%H%M%S)"
+
 extravars=""
 
-while getopts ":hi:swl:k:c:a:b:e:" optflag; do
+while getopts ":hi:swl:k:c:a:b:e:p:" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -158,6 +162,9 @@ while getopts ":hi:swl:k:c:a:b:e:" optflag; do
 		;;
 	e)
 		extravars="interfaces=$OPTARG $extravars"
+		;;
+	p)
+		testresdir="$OPTARG"
 		;;
 	h)
 		print_usage
@@ -202,6 +209,6 @@ echo ""
 ansible all -m ping || exit 1
 echo ""
 
-ansible-playbook site.yml --extra-vars "$extravars"
+ansible-playbook site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
 
 exit 0
