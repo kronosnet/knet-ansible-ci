@@ -32,5 +32,4 @@ interfaces: eth0
 ipproto: ipv4
 
 skipcorosynctests: no
-
-skipknetbenchtests: no
+skipkronosnettests: no

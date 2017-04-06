@@ -42,6 +42,10 @@ function print_usage() {
 	echo "                              ipv4/ipv6 subnet of eth0 on the other nodes, etc."
 	echo " -p path_to_testresults       location where to store test results."
 	echo "                              Default: \$PWD/testresults/\$(date +%Y%m%d-%H%M%S)/"
+	echo " -t [testlist]                comma separated list of tests to skip. Default: none"
+	echo "                              Example: -t kronosnet (will only run corosync tests)"
+	echo "                                       -t corosync (will only run kronosnet tests)"
+	echo "                                       -t kronosnet,corosync (will skip both tests)"
 }
 
 function generate_ansible_cfg {
@@ -128,13 +132,20 @@ function parse_build_opts {
 	return 0
 }
 
+function parse_test_opts {
+	opts="$(echo $1 | sed -e 's/,/ /g')"
+	for i in $opts; do
+		extravars="skip${i}tests=yes $extravars"
+	done
+}
+
 # parse command line options
 
 testresdir="$PWD/testresults"
 
 extravars=""
 
-while getopts ":hi:swl:k:c:a:b:e:p:" optflag; do
+while getopts ":hi:swl:k:c:a:b:e:p:t:" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -165,6 +176,9 @@ while getopts ":hi:swl:k:c:a:b:e:p:" optflag; do
 		;;
 	p)
 		testresdir="$OPTARG"
+		;;
+	t)
+		parse_test_opts "$OPTARG"
 		;;
 	h)
 		print_usage
