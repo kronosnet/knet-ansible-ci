@@ -1,0 +1,5 @@
+- include: test-cpghum.yml
+  when: inventory_hostname == groups['test-nodes'][0]
+
+- include: test-cpgbench.yml
+  when: inventory_hostname == groups['test-nodes'][0]

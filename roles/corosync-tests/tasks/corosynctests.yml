@@ -1,3 +1,9 @@
+- name: setup test results storage area
+  file: path=/srv/knetansible/testresults/corosync state=absent
+
+- name: setup test results storage area
+  file: path=/srv/knetansible/testresults/corosync state=directory mode=0755
+
 - name: generate authkey
   shell: dd if=/dev/zero of=/etc/corosync/authkey bs=4096 count=1
 
