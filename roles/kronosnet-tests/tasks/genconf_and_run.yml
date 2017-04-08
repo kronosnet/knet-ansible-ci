@@ -9,5 +9,5 @@
   async: 1800
   poll: 1
 
-#- name: remove old knet_bench wrapper
-#  file: path=/srv/knetansible/knet_bench_wrapper state=absent
+- name: remove old knet_bench wrapper
+  file: path=/srv/knetansible/knet_bench_wrapper state=absent
