@@ -223,8 +223,10 @@ echo ""
 ansible all -m ping || exit 1
 echo ""
 
-mkdir -p "${testresdir}"
 testresdir="${testresdir}/$(date +%Y%m%d-%H%M%S)"
+
+mkdir -p "${testresdir}/corosync"
+mkdir -p "${testresdir}/kronosnet"
 
 ansible-playbook site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
 

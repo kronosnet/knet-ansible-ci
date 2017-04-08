@@ -1,0 +1,10 @@
+#!/bin/bash
+# managed by ansible
+{% set intlist = interfaces.split(',') %}
+
+set -e
+
+export PATH="$PATH:/srv/knetansible/build/kronosnet/libknet/tests"
+
+knet_bench_test{% if knet_crypto_hash is defined %} -c nss:{{ knet_crypto_cipher }}:{{ knet_crypto_hash }}{% endif %}{% for node in groups['test-nodes'] %}{% if node == inventory_hostname %} -t {{ loop.index }}{% endif %}{% endfor %}{% for node in groups['test-nodes'] %} -n {{ loop.index }},{% for interface in intlist %}{% if ipproto == 'ipv4' %}{{ hostvars[node]['ansible_' + interface][ipproto]['address'] }}{% else %}{% set v6list = hostvars[node]['ansible_' + interface][ipproto] %}{% for v6 in v6list -%}{% if v6.scope == 'global' %}{{ v6.address }}{% endif %}{% endfor %}{% endif %}{% if not loop.last %},{% endif %}{% endfor %}{% endfor %} -T {{ test_type }} -P {{ knet_transport }} -s 1 > /srv/knetansible/testresults/kronosnet/{{ test_output }}.knet_bench 2>&1
+

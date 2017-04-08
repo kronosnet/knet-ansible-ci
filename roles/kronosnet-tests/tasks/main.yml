@@ -1,0 +1,2 @@
+- include: kronosnettests.yml
+  when: skipkronosnettests != 'yes'

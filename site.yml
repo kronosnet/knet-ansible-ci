@@ -19,9 +19,4 @@
 
   roles:
     - corosync-tests
-
-- name: collect results
-  hosts: test-nodes
-
-  roles:
-    - collect-results
+    - kronosnet-tests

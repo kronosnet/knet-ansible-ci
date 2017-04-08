@@ -1,5 +1,0 @@
-- synchronize:
-    src: /srv/knetansible/testresults/
-    dest: "{{ testresdir }}/"
-    mode: pull
-  when: inventory_hostname == groups['test-nodes'][0]

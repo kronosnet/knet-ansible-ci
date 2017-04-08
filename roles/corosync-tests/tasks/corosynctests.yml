@@ -49,3 +49,9 @@
 
 - name: stop corosync
   service: name=corosync state=stopped
+
+- synchronize:
+    src: /srv/knetansible/testresults/corosync/*
+    dest: "{{ testresdir }}/corosync"
+    mode: pull
+  when: inventory_hostname == groups['test-nodes'][0]

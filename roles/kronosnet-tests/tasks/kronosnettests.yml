@@ -1,0 +1,41 @@
+- name: setup test results storage area
+  file: path=/srv/knetansible/testresults/kronosnet state=absent
+
+- name: setup test results storage area
+  file: path=/srv/knetansible/testresults/kronosnet state=directory mode=0755
+
+- name: run knet tests
+  include: genconf_and_run.yml
+  vars:
+    ipproto: "{{ item[0] }}"
+    knet_transport: "{{ item[1] }}"
+    knet_link_mode: "{{ item[2] }}"
+    test_type: "{{ item[3] }}"
+    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_crypto_off"
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'udp', 'sctp' ]
+    - [ 'passive', 'active' ]
+    - [ 'perf-by-size', 'perf-by-time' ]
+
+- name: run knet crypto tests
+  include: genconf_and_run.yml
+  vars:
+    ipproto: "{{ item[0] }}"
+    knet_transport: "{{ item[1] }}"
+    knet_link_mode: "{{ item[2] }}"
+    knet_crypto_hash: "sha1"
+    knet_crypto_cipher: "aes256"
+    test_type: "{{ item[3] }}"
+    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_crypto_on"
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'udp', 'sctp' ]
+    - [ 'passive', 'active' ]
+    - [ 'perf-by-size', 'perf-by-time' ]
+
+- synchronize:
+    src: /srv/knetansible/testresults/kronosnet/*
+    dest: "{{ testresdir }}/kronosnet/{{ inventory_hostname }}"
+    mode: pull
+  when: inventory_hostname != groups['test-nodes'][0]

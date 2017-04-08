@@ -1,0 +1,13 @@
+- name: remove old knet_bench wrapper
+  file: path=/srv/knetansible/knet_bench_wrapper state=absent
+
+- name: install knet_bench_wrapper {{ test_output }}
+  template: src=knet_bench_wrapper.j2 dest=/srv/knetansible/knet_bench_wrapper mode=0755
+
+- name: run test {{ test_output }}
+  command: /srv/knetansible/knet_bench_wrapper
+  async: 1800
+  poll: 1
+
+#- name: remove old knet_bench wrapper
+#  file: path=/srv/knetansible/knet_bench_wrapper state=absent
