@@ -1,2 +1,0 @@
-- name: cpgbench "{{ test_output }}"
-  shell: export PATH="$PATH:/srv/knetansible/build/corosync/test" && cpgbench > /srv/knetansible/testresults/corosync/"{{ test_output }}".cpgbench 2>&1
