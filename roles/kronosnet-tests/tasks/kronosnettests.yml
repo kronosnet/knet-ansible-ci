@@ -14,7 +14,7 @@
     test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_crypto_off"
   with_nested:
     - [ 'ipv4', 'ipv6' ]
-    - [ 'udp' ]
+    - [ 'udp', 'sctp' ]
     - [ 'passive', 'active' ]
     - [ 'perf-by-size', 'perf-by-time' ]
 
@@ -30,7 +30,7 @@
     test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_crypto_on"
   with_nested:
     - [ 'ipv4', 'ipv6' ]
-    - [ 'udp' ]
+    - [ 'udp', 'sctp' ]
     - [ 'passive', 'active' ]
     - [ 'perf-by-size', 'perf-by-time' ]
 
