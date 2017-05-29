@@ -59,7 +59,7 @@ plot_lat_data() {
 	set output "$dest.lat.png"
 	set title "$testname1 (src1) vs $testname2 (src2)"
 	set style data linespoints
-	set ylabel "microseconds (lower better)"
+	set ylabel "Latency in microseconds (lower better)"
 	set xlabel "packet size (bytes)"
 	plot "$dest.dat" using 2:xtic(1) title columnheader(2), \
 		for [i=3:7] '' using i title columnheader(i)
