@@ -2,9 +2,17 @@
   yum: name='*' update_cache=yes state=latest
   register: latest_state
 
+- name: install repos
+  yum: name={{ item }} state=installed
+  with_items:
+   - epel-release
+  when: ansible_os_family == "RedHat"
+
 - name: install build deps
   yum: name={{ item }} state=installed
   with_items:
+   - clang
+   - gcc
    - git
    - autoconf
    - automake
