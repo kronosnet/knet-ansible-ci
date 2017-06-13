@@ -38,11 +38,11 @@
   when: corosyncsrc == 'git' or corosyncsrc == 'local'
 
 - name: setup build tree (from git)
-  shell: cd /srv/knetansible/build/corosync && /srv/knetansible/src/corosync/configure {{ corosyncconfopt }}
+  shell: cd /srv/knetansible/build/corosync && CC='{{ compiler }}' /srv/knetansible/src/corosync/configure {{ corosyncconfopt }}
   when: corosyncsrc == 'git'
 
 - name: setup build tree (from local)
-  shell: cd /srv/knetansible/build/corosync && '{{ corosynclocalpath }}'/configure {{ corosyncconfopt }}
+  shell: cd /srv/knetansible/build/corosync && CC='{{ compiler }}' '{{ corosynclocalpath }}'/configure {{ corosyncconfopt }}
   when: corosyncsrc == 'local'
 
 - name: build / install corosync

@@ -36,11 +36,11 @@
   when: kronosnetsrc == 'git' or kronosnetsrc == 'local'
 
 - name: setup build tree (from git)
-  shell: cd /srv/knetansible/build/kronosnet && /srv/knetansible/src/kronosnet/configure {{ kronosnetconfopt }}
+  shell: cd /srv/knetansible/build/kronosnet && CC='{{ compiler }}' /srv/knetansible/src/kronosnet/configure {{ kronosnetconfopt }}
   when: kronosnetsrc == 'git'
 
 - name: setup build tree (from local)
-  shell: cd /srv/knetansible/build/kronosnet && '{{ kronosnetlocalpath }}'/configure {{ kronosnetconfopt }}
+  shell: cd /srv/knetansible/build/kronosnet && CC='{{ compiler }}' '{{ kronosnetlocalpath }}'/configure {{ kronosnetconfopt }}
   when: kronosnetsrc == 'local'
 
 - name: build / install kronosnet

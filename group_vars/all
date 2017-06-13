@@ -4,6 +4,8 @@ skipupdate: no
 
 wipecode: no
 
+compiler: gcc
+
 skiplibqb: no
 libqbsrc: git
 libqbgitrepo: https://github.com/ClusterLabs/libqb.git

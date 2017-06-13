@@ -30,11 +30,11 @@
   when: libqbsrc == 'git' or libqbsrc == 'local'
 
 - name: setup build tree (from git)
-  shell: cd /srv/knetansible/build/libqb && /srv/knetansible/src/libqb/configure {{ libqbconfopt }}
+  shell: cd /srv/knetansible/build/libqb && CC='{{ compiler }}' /srv/knetansible/src/libqb/configure {{ libqbconfopt }}
   when: libqbsrc == 'git'
 
 - name: setup build tree (from local)
-  shell: cd /srv/knetansible/build/libqb && '{{ libqblocalpath }}'/configure {{ libqbconfopt }}
+  shell: cd /srv/knetansible/build/libqb && CC='{{ compiler }}' '{{ libqblocalpath }}'/configure {{ libqbconfopt }}
   when: libqbsrc == 'local'
 
 - name: build / install libqb
