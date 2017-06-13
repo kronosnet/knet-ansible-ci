@@ -26,6 +26,7 @@ function print_usage() {
 	echo "                              and directory should already contain ./configure"
 	echo "    system                    install system provided rpms"
 	echo "    skip                      do nothing. code is installed already. don't touch it"
+	echo " -z [compiler]                specify compiler to use (default: gcc). CI will install both gcc and clang by default"
 	echo " -a [prj,confi opts]:[prj..   add extra configure options."
 	echo "                              prj: libqb kronosnet corosync"
 	echo "                              configure opts are passed pristine to './configure \$conf_opts"
@@ -145,7 +146,7 @@ testresdir="$PWD/testresults"
 
 extravars=""
 
-while getopts ":hi:swl:k:c:a:b:e:p:t:" optflag; do
+while getopts ":hi:swl:k:c:a:b:e:p:t:z:" optflag; do
 	case "$optflag" in
 	i)
 		knethosts="$OPTARG"
@@ -179,6 +180,9 @@ while getopts ":hi:swl:k:c:a:b:e:p:t:" optflag; do
 		;;
 	t)
 		parse_test_opts "$OPTARG"
+		;;
+	z)
+		extravars="compiler=$OPTARG $extravars"
 		;;
 	h)
 		print_usage
