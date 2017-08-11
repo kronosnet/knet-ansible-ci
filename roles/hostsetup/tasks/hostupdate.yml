@@ -30,6 +30,7 @@
    - net-tools
    - groff
    - lz4-devel
+   - lzo-devel
 
 - name: reboot servers only after upgrades/updates
   shell: sleep 2 && /sbin/shutdown -r +1
