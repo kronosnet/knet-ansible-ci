@@ -24,14 +24,16 @@
     ipproto: "{{ item[0] }}"
     knet_transport: "{{ item[1] }}"
     knet_link_mode: "{{ item[2] }}"
+    knet_crypto_model: "{{ item[3] }}"
     knet_crypto_hash: "sha1"
     knet_crypto_cipher: "aes256"
-    test_type: "{{ item[3] }}"
-    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_crypto_on"
+    test_type: "{{ item[4] }}"
+    test_output: "knet_{{ item[0] }}_{{ item[1] }}_{{ item[2] }}_{{ item[3] }}_{{ item[4] }}_crypto_on"
   with_nested:
     - [ 'ipv4', 'ipv6' ]
     - [ 'udp', 'sctp' ]
     - [ 'passive', 'active' ]
+    - [ 'nss', 'openssl' ]
     - [ 'perf-by-size', 'perf-by-time' ]
 
 - synchronize:
