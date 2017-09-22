@@ -21,6 +21,7 @@
    - procps
    - check-devel
    - nss-devel
+   - openssl-devel
    - lksctp-tools-devel
    - pam-devel
    - gdb
