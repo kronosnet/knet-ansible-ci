@@ -11,6 +11,7 @@ function print_usage() {
 	echo ""
 	echo "Options:"
 	echo " -h                           print this help text"
+	echo " -d                           enable ansible debug (-vvv)"
 	echo " -i [basename],[numnodes]     generate/update inventory file"
 	echo " -s                           skip host update/upgrade and reboot"
 	echo " -w                           wipe all src/build dirs and start fresh"
@@ -146,8 +147,11 @@ testresdir="$PWD/testresults"
 
 extravars=""
 
-while getopts ":hi:swl:k:c:a:b:e:p:t:z:" optflag; do
+while getopts "hdi:swl:k:c:a:b:e:p:t:z:" optflag; do
 	case "$optflag" in
+	d)
+		ansibledebug="-vvv"
+		;;
 	i)
 		knethosts="$OPTARG"
 		;;
@@ -232,6 +236,6 @@ testresdir="${testresdir}/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "${testresdir}/corosync"
 mkdir -p "${testresdir}/kronosnet"
 
-ansible-playbook site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
+ansible-playbook ${ansibledebug} site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
 
 exit 0
