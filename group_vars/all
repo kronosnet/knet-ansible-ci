@@ -19,7 +19,7 @@ kronosnetsrc: git
 kronosnetgitrepo: https://github.com/fabbione/kronosnet.git
 kronosnetgitver: master
 kronosnetlocalpath:
-kronosnetconfopt: --enable-kronosnetd
+kronosnetconfopt:
 kronosnetbuildopt:
 
 skipcorosync: no
@@ -27,7 +27,7 @@ corosyncsrc: git
 corosyncgitrepo: https://github.com/corosync/corosync.git
 corosyncgitver: master
 corosynclocalpath:
-corosyncconfopt: --enable-systemd
+corosyncconfopt:
 corosyncbuildopt:
 
 interfaces: eth0
