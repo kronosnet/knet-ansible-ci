@@ -54,6 +54,7 @@ function generate_ansible_cfg {
 	echo "[defaults]" > ansible.cfg
 	echo "callback_plugins = plugins/" >> ansible.cfg
 	echo "inventory = ansible-inventory" >> ansible.cfg
+	echo "forks = 500" >> ansible.cfg
 	echo "generated ansible config:"
 	echo "========================="
 	cat ansible.cfg
@@ -228,7 +229,7 @@ fi
 echo "Checking connectivity to nodes"
 echo ""
 
-ansible all -m ping || exit 1
+ansible all -f 500 -m ping || exit 1
 echo ""
 
 testresdir="${testresdir}/$(date +%Y%m%d-%H%M%S)"
