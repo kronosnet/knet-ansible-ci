@@ -34,6 +34,7 @@
    - lzo-devel
    - xz-devel
    - bzip2-devel
+   - systemd-devel
 
 - name: reboot servers only after upgrades/updates
   shell: sleep 2 && /sbin/shutdown -r +1
