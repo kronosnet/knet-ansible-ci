@@ -37,11 +37,9 @@ function print_usage() {
 	echo "                              prj: libqb kronosnet corosync"
 	echo "                              build opts are passed pristine to 'make \$build_opts all install'"
 	echo "                              note: shell escaping is important to identify options"
-	echo " -e [interface],...           list of interfaces to use for testing (max 8)"
-	echo "                              -e eth0,eth1,eth4"
-	echo "                              udpu will only use the first interface. knet will use all"
-	echo "                              tests assume that eth0 on node1 is configured on the same"
-	echo "                              ipv4/ipv6 subnet of eth0 on the other nodes, etc."
+	echo " -e [networks],...            list of networks to use for testing (max 8)"
+	echo "                              -e 192.168.1.0/24,192.168.3.0/24,172.16.1.0/16"
+	echo "                              udpu will only use the first network. knet will use all"
 	echo " -p path_to_testresults       location where to store test results."
 	echo "                              Default: \$PWD/testresults/\$(date +%Y%m%d-%H%M%S)/"
 	echo " -t [testlist]                comma separated list of tests to skip. Default: none"
@@ -148,6 +146,8 @@ testresdir="$PWD/testresults"
 
 extravars=""
 
+hasnetworks=0
+
 while getopts "hdi:swl:k:c:a:b:e:p:t:z:" optflag; do
 	case "$optflag" in
 	d)
@@ -178,7 +178,8 @@ while getopts "hdi:swl:k:c:a:b:e:p:t:z:" optflag; do
 		parse_build_opts build "$OPTARG"
 		;;
 	e)
-		extravars="interfaces=$OPTARG $extravars"
+		extravars="networks=$OPTARG $extravars"
+		hasnetworks=1
 		;;
 	p)
 		testresdir="$OPTARG"
@@ -223,6 +224,11 @@ if [ -n "$knethosts" ]; then
 fi
 if [ ! -f ansible-inventory ]; then
 	echo "ERROR: missing ansible-inventory file"
+	exit 1
+fi
+
+if [ "$hasnetworks" = "0" ]; then
+	echo "ERROR: -e must be specified"
 	exit 1
 fi
 

@@ -16,7 +16,7 @@ libqbbuildopt:
 
 skipkronosnet: no
 kronosnetsrc: git
-kronosnetgitrepo: https://github.com/fabbione/kronosnet.git
+kronosnetgitrepo: https://github.com/kronosnet/kronosnet.git
 kronosnetgitver: master
 kronosnetlocalpath:
 kronosnetconfopt:
@@ -30,7 +30,6 @@ corosynclocalpath:
 corosyncconfopt: --enable-systemd
 corosyncbuildopt:
 
-interfaces: eth0
 ipproto: ipv4
 
 skipcorosynctests: no
