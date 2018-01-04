@@ -52,7 +52,7 @@ function generate_ansible_cfg {
 	echo "[defaults]" > ansible.cfg
 	echo "callback_plugins = plugins/" >> ansible.cfg
 	echo "inventory = ansible-inventory" >> ansible.cfg
-	echo "forks = 500" >> ansible.cfg
+	echo "forks = 70" >> ansible.cfg
 	echo "generated ansible config:"
 	echo "========================="
 	cat ansible.cfg
