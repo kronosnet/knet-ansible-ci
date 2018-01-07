@@ -48,3 +48,7 @@
 - name: build / install corosync
   shell: cd /srv/knetansible/build/corosync && make {{ corosyncbuildopt }} all install && ldconfig -v
   when: corosyncsrc == 'git' or corosyncsrc == 'local'
+
+- name: update systemd status
+  shell: systemctl daemon-reload || true
+  when: corosyncsrc == 'git' or corosyncsrc == 'local'
