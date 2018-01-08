@@ -41,12 +41,15 @@
 
 - name: stop and disable firewalld
   service: name=firewalld state=stopped enabled=no
+  ignore_errors: yes
 
 - name: stop and disable iptables
   service: name=iptables state=stopped enabled=no
+  ignore_errors: yes
 
 - name: stop and disable ip6tables
   service: name=ip6tables state=stopped enabled=no
+  ignore_errors: yes
 
 - name: reboot servers only after upgrades/updates
   shell: sleep 2 && /sbin/shutdown -r +1
